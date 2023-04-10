@@ -1,9 +1,9 @@
 //This file will use the matterjs library to create a maze, render an object like a ball and map keystrokes (W,S,A,D) to movements within the matterjs engine.
 //I might also change the circle to a clipart corn, because it'd be funny to call this app 'The Maize'
 
-const {Engine, Render, Runner, World, Bodies} = Matter; //destructuring from matterjs library
+const {Engine, Render, Runner, World, Bodies, Body, Events} = Matter; //destructuring from matterjs library
 
-const cells = 15;
+const cells = 3;
 const width = 600;
 const height = 600;
 const wallThickness = 5;
@@ -11,6 +11,7 @@ const wallThickness = 5;
 const unitLen = width/cells; //each cell's width is a fraction of the possible width
 
 const engine = Engine.create();
+engine.world.gravity.y=0; //disable gravity
 const {world} = engine; //World is deconstructed from engine
 const render = Render.create({
   element: document.body,
@@ -145,44 +146,51 @@ mkWalls(verticals,'v');
 
 //goal
 
-const mkGoal = () => {
-  const goal = Bodies.rectangle(
+
+const goal = Bodies.rectangle(
     width - unitLen/2,
     height - unitLen/2,
     unitLen * .7,
     unitLen * .7,
-    {isStatic:true}
-  );
-  World.add(world, goal);
-};
+    {
+      label: 'goal',
+      isStatic:true
+    });
+World.add(world, goal);
 
-const goal = mkGoal();
 
-//ball
-const mkBall = () => {
-  const ball = Bodies.circle(
-    unitLen/2, //first cell 
-    unitLen/2,
-    unitLen/4,
-  );
-  World.add(world, ball);
-}
-
-const ball = mkBall();
-
+const ball = Bodies.circle(
+  unitLen/2,
+  unitLen/2,
+  unitLen/4,
+  {label: 'ball'}
+)
+World.add(world,ball);
   //add velocity to ball
   document.addEventListener('keydown', event => {
+    const {x, y} = ball.velocity;
     if(event.code === 'KeyW'){
-
+      Body.setVelocity(ball, {x, y:-5});
     }
-    if(event.code === 'KeyW'){
-
+    if(event.code === 'KeyA'){
+      Body.setVelocity(ball, {x:x-5, y});
     }
-    if(event.code === 'KeyW'){
-
+    if(event.code === 'KeyD'){
+      Body.setVelocity(ball, {x:x+5, y})
     }
-    if(event.code === 'KeyW'){
-
+    if(event.code === 'KeyS'){
+      Body.setVelocity(ball, {x, y:y+5})
     }
+  });
 
-  })
+//win condition
+
+Events.on(engine, 'collisionStart', event =>{
+  event.pairs.forEach(collision => {
+    const labels = ['ball','goal'];
+    if(labels.includes(collision.bodyA.label) &&
+     labels.includes(collision.bodyB.label)){
+      console.log('user won');
+    }
+});
+})
