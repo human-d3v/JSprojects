@@ -2,12 +2,14 @@
 
 const {Engine, Render, Runner, World, Bodies, Body, Events} = Matter; //destructuring from matterjs library
 
-const cells = 6;
-const width = 600;
-const height = 600;
+const cellsH = 4;
+const cellsV = 3;
+const width = window.innerWidth;
+const height = window.innerHeight;
 const wallThickness = 5;
 
-const unitLen = width/cells; //each cell's width is a fraction of the possible width
+const unitLenX = width/cellsH; //each cell's width is a fraction of the possible width
+const unitLenY = height/cellsV; 
 
 const engine = Engine.create();
 engine.world.gravity.y=0; //disable gravity
@@ -26,10 +28,10 @@ Runner.run(Runner.create(),engine);
 
 //Walls
 const walls = [
-  Bodies.rectangle(width/2, 0        , width,      3,{isStatic:true}), //top border
-  Bodies.rectangle(width/2, height   , width,      3,{isStatic:true}), //bottom border
-  Bodies.rectangle(0      , height /2,     3, height,{isStatic:true}), //left border
-  Bodies.rectangle(width  , height /2,     3, height,{isStatic:true}) //right border
+  Bodies.rectangle(width/2, 0        , width,      5,{isStatic:true}), //top border
+  Bodies.rectangle(width/2, height   , width,      5,{isStatic:true}), //bottom border
+  Bodies.rectangle(0      , height /2,     5, height,{isStatic:true}), //left border
+  Bodies.rectangle(width  , height /2,     5, height,{isStatic:true}) //right border
 ];
 
 World.add(world, walls);
@@ -59,17 +61,17 @@ const mkArr = (row, col) => {
 };
 
 // // //grid
-const grid = mkArr(cells,cells);
+const grid = mkArr(cellsV,cellsH);
 
 // // //verticals => has 3 rows and 2 columns 
-const verticals = mkArr(cells, cells - 1);
+const verticals = mkArr(cellsV, cellsH - 1);
 
 // // //horizontals => has 2 rows and 3 columns  
-const horizontals = mkArr(cells - 1, cells);
+const horizontals = mkArr(cellsV - 1, cellsH);
 
 //choost starting 
-const startRow = Math.floor(Math.random() * cells);
-const startCol = Math.floor(Math.random() * cells);
+const startRow = Math.floor(Math.random() * cellsV);
+const startCol = Math.floor(Math.random() * cellsH);
 
 //iterate through maze to create maze
 const stepIntoCell = (r, c) => {
@@ -94,9 +96,9 @@ const stepIntoCell = (r, c) => {
     //check if the neighbor is out of bounds
     if (
       nextRow < 0 || 
-      nextRow >= cells || 
+      nextRow >= cellsV || 
       nextColumn<0 || 
-      nextColumn >= cells
+      nextColumn >= cellsH
       ){
       continue;
     }
@@ -130,10 +132,10 @@ const mkWalls = (arr, tag) => {
         return;
       };
       const wall = Bodies.rectangle(
-        tag === 'h'? (columnIndex * unitLen) + (unitLen / 2) : (columnIndex * unitLen) + unitLen,
-        tag === 'h'? (rowIndex * unitLen) + unitLen : (rowIndex * unitLen) + (unitLen / 2), 
-        tag === 'h'? unitLen : wallThickness,
-        tag === 'h'? wallThickness : unitLen,
+        tag === 'h'? (columnIndex * unitLenX) + (unitLenX / 2) : (columnIndex * unitLenX) + unitLenX,
+        tag === 'h'? (rowIndex * unitLenY) + unitLenY : (rowIndex * unitLenY) + (unitLenY / 2), 
+        tag === 'h'? unitLenX : wallThickness,
+        tag === 'h'? wallThickness : unitLenY,
         {
           label: 'wall',
           isStatic:true
@@ -150,26 +152,26 @@ mkWalls(verticals,'v');
 
 
 const goal = Bodies.rectangle(
-    width - unitLen/2,
-    height - unitLen/2,
-    unitLen * .7,
-    unitLen * .7,
+    width - unitLenX/2,
+    height - unitLenY/2,
+    unitLenX * .7,
+    unitLenY * .7,
     {
       label: 'goal',
       isStatic:true
     });
 World.add(world, goal);
 
-
+const ballRadius = Math.min(unitLenX,unitLenY)/4
 const ball = Bodies.circle(
-  unitLen/2,
-  unitLen/2,
-  unitLen/4,
+  unitLenX/2,
+  unitLenY/2,
+  ballRadius,
   {label: 'ball'}
 )
 World.add(world,ball);
   //add velocity to ball
-  document.addEventListener('keydown', event => {
+  document.addEventListener('keypress', event => {
     const {x, y} = ball.velocity;
     if(event.code === 'KeyW'){
       Body.setVelocity(ball, {x, y:-5});
@@ -200,4 +202,4 @@ Events.on(engine, 'collisionStart', event =>{
       })
     }
 });
-})
+});
