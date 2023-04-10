@@ -1,9 +1,8 @@
 //This file will use the matterjs library to create a maze, render an object like a ball and map keystrokes (W,S,A,D) to movements within the matterjs engine.
-//I might also change the circle to a clipart corn, because it'd be funny to call this app 'The Maize'
 
 const {Engine, Render, Runner, World, Bodies, Body, Events} = Matter; //destructuring from matterjs library
 
-const cells = 3;
+const cells = 6;
 const width = 600;
 const height = 600;
 const wallThickness = 5;
@@ -27,10 +26,10 @@ Runner.run(Runner.create(),engine);
 
 //Walls
 const walls = [
-  Bodies.rectangle(width/2, 0        , width,      2,{isStatic:true}), //top border
-  Bodies.rectangle(width/2, height   , width,      2,{isStatic:true}), //bottom border
-  Bodies.rectangle(0      , height /2,     2, height,{isStatic:true}), //left border
-  Bodies.rectangle(width  , height /2,     2, height,{isStatic:true}) //right border
+  Bodies.rectangle(width/2, 0        , width,      3,{isStatic:true}), //top border
+  Bodies.rectangle(width/2, height   , width,      3,{isStatic:true}), //bottom border
+  Bodies.rectangle(0      , height /2,     3, height,{isStatic:true}), //left border
+  Bodies.rectangle(width  , height /2,     3, height,{isStatic:true}) //right border
 ];
 
 World.add(world, walls);
@@ -135,7 +134,10 @@ const mkWalls = (arr, tag) => {
         tag === 'h'? (rowIndex * unitLen) + unitLen : (rowIndex * unitLen) + (unitLen / 2), 
         tag === 'h'? unitLen : wallThickness,
         tag === 'h'? wallThickness : unitLen,
-        {isStatic:true});
+        {
+          label: 'wall',
+          isStatic:true
+        });
       World.add(world,wall);
     });
   });
@@ -190,7 +192,12 @@ Events.on(engine, 'collisionStart', event =>{
     const labels = ['ball','goal'];
     if(labels.includes(collision.bodyA.label) &&
      labels.includes(collision.bodyB.label)){
-      console.log('user won');
+      world.gravity.y=1; //turn gravity back on to make everything collapse on itself
+      world.bodies.forEach(body => {
+        if(body.label === 'wall'){
+          body.isStatic = false;
+        }
+      })
     }
 });
 })
