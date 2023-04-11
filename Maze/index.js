@@ -2,10 +2,10 @@
 
 const {Engine, Render, Runner, World, Bodies, Body, Events} = Matter; //destructuring from matterjs library
 
-const cellsH = 4;
-const cellsV = 3;
-const width = window.innerWidth;
-const height = window.innerHeight;
+const cellsH =13; 
+const cellsV = 10;
+const width = window.innerWidth - 10;
+const height = window.innerHeight - 10;
 const wallThickness = 5;
 
 const unitLenX = width/cellsH; //each cell's width is a fraction of the possible width
@@ -18,7 +18,7 @@ const render = Render.create({
   element: document.body,
   engine: engine,
   options: {
-    // wireframes:false, //this option can be invoked if only outlines are desired. 
+    wireframes:false, //this option can be invoked if only outlines are desired. 
     width: width, 
     height: height
   }
@@ -28,10 +28,10 @@ Runner.run(Runner.create(),engine);
 
 //Walls
 const walls = [
-  Bodies.rectangle(width/2, 0        , width,      5,{isStatic:true}), //top border
-  Bodies.rectangle(width/2, height   , width,      5,{isStatic:true}), //bottom border
-  Bodies.rectangle(0      , height /2,     5, height,{isStatic:true}), //left border
-  Bodies.rectangle(width  , height /2,     5, height,{isStatic:true}) //right border
+  Bodies.rectangle(width/2, 0        , width,      5,{label:'border', isStatic:true}), //top border
+  Bodies.rectangle(width/2, height   , width,      5,{label:'border',isStatic:true}), //bottom border
+  Bodies.rectangle(0      , height /2,     5, height,{label:'border',isStatic:true}), //left border
+  Bodies.rectangle(width  , height /2,     5, height,{label:'border',isStatic:true}) //right border
 ];
 
 World.add(world, walls);
@@ -138,7 +138,10 @@ const mkWalls = (arr, tag) => {
         tag === 'h'? wallThickness : unitLenY,
         {
           label: 'wall',
-          isStatic:true
+          isStatic:true,
+          render: {
+            fillStyle: 'red'
+          }
         });
       World.add(world,wall);
     });
@@ -158,7 +161,10 @@ const goal = Bodies.rectangle(
     unitLenY * .7,
     {
       label: 'goal',
-      isStatic:true
+      isStatic:true,
+      render: {
+        fillStyle: 'green'
+      }
     });
 World.add(world, goal);
 
@@ -167,7 +173,12 @@ const ball = Bodies.circle(
   unitLenX/2,
   unitLenY/2,
   ballRadius,
-  {label: 'ball'}
+  {
+    label: 'ball',
+    render: {
+      fillStyle: 'teal'
+    }
+  }
 )
 World.add(world,ball);
   //add velocity to ball
@@ -194,6 +205,7 @@ Events.on(engine, 'collisionStart', event =>{
     const labels = ['ball','goal'];
     if(labels.includes(collision.bodyA.label) &&
      labels.includes(collision.bodyB.label)){
+      document.querySelector(".winner").classList.remove('hidden');
       world.gravity.y=1; //turn gravity back on to make everything collapse on itself
       world.bodies.forEach(body => {
         if(body.label === 'wall'){
