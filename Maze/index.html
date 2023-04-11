@@ -8,11 +8,33 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.js" integrity="sha512-rsntMCBgWYEWKl4HtqWmQ3vdHgvSq8CTtJd19YL7lCtKokLPWt7UEoHVabK1uiNfUdaLit8O090no5BZjcz+bw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
   body {
-    margin:0;
+    margin:0px;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  h1 {
+    color: white;
+    font-size: 36px;
+  }
+
+  .winner{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 1;
+    height: 100vh;
+    width: 100vw; 
   }
 </style>
 </head>
 <body>
+  <div class="winner hidden">
+   <h1>You Win!</h1> 
+  </div>
   <script src="index.js"></script>
 </body> 
 </html>
