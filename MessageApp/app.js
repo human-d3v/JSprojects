@@ -3,9 +3,19 @@ document.querySelector('form').addEventListener('submit',event => {
 
   const input = document.querySelector('#message-input');
   const encrypted = btoa(input.value);
-  document.querySelector('#link-input').value = encrypted;
-})
+  const linkInput = document.querySelector('#link-input');
+  linkInput.value = `${window.location}#${encrypted}`;
+  
+  //show copy button 
+  const btn = document.querySelector('#copy')
+  btn.style.display = '';
+  btn.addEventListener('click',e => {
+    navigator.clipboard.writeText(linkInput.value);
+  });
 
+  linkInput.select();
+
+});
 /*
 
   btoa() & atob() 
@@ -39,3 +49,4 @@ document.querySelector('form').addEventListener('submit',event => {
   therefore:
     'sec' => 'c2Vj'
 */
+
