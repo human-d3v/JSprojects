@@ -1,5 +1,18 @@
+const {hash} = window.location;
+
+const message = atob(hash.replace("#",''));
+
+if(message) {
+  document.querySelector("#message-form").classList.add('hide');
+  const ms = document.querySelector("#message-show")
+  ms.classList.remove('hide');
+  ms.querySelector('h1').innerHTML = message;
+}
 document.querySelector('form').addEventListener('submit',event => {
   event.preventDefault(); //prevent browser from submitting data to nonexistent backend server
+
+  document.querySelector('#message-form').classList.add('hide');
+  document.querySelector('#link-form').classList.remove('hide');
 
   const input = document.querySelector('#message-input');
   const encrypted = btoa(input.value);
@@ -8,11 +21,9 @@ document.querySelector('form').addEventListener('submit',event => {
   
   //show copy button 
   const btn = document.querySelector('#copy')
-  btn.style.display = '';
   btn.addEventListener('click',e => {
     navigator.clipboard.writeText(linkInput.value);
   });
-
   linkInput.select();
 
 });
