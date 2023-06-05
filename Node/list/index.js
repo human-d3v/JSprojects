@@ -1,4 +1,4 @@
-/this file acts like the 'ls' command in linux/unix systems.
+//this file acts like the 'ls' command in linux/unix systems.
 #! C:\Users\bryar.topham\scoop\apps\nodejs\current\node
 
 const fs = require('fs');
