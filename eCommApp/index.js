@@ -2,7 +2,7 @@ const express = require('express'); //express is the webserver
 const bodyParser = require('body-parser');
 
 const app = express();
-
+app.use(bodyParser.urlencoded({extended: true}));
 //mapping GET to app.get with callback to be fired
 //req == request && res == resolution sent back
 app.get('/',(req,res) => {	
@@ -19,7 +19,7 @@ app.get('/',(req,res) => {
 });
 
 
-app.post('/', bodyParser.urlencoded({extended: true}), (req,res)=>{
+app.post('/', (req,res)=>{
 	console.log(req.body);
 	res.send('success');
 });
