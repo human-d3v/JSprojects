@@ -1,4 +1,6 @@
 const express = require('express'); //express is the webserver
+const bodyParser = require('body-parser');
+
 const app = express();
 
 //mapping GET to app.get with callback to be fired
@@ -16,24 +18,8 @@ app.get('/',(req,res) => {
 		`);
 });
 
-const bodyParser = (req, res, next) => { //acts as express middleware function  
-	if(req.method === 'POST'){
-	 req.on('data', data => {
-	 	const parsed = data.toString('utf8').split('&');
-	 	const formData = {}; //create object to receive the data variables
-	 	for(let pair of parsed){
-	 		const [key, value] = pair.split('=');
-	 		formData[key] = value;
-	 	};
-		 req.body = formData;
-		 next();
-	 });
-	}else {
-		next();
-	};
-};
 
-app.post('/', bodyParser, (req,res)=>{
+app.post('/', bodyParser.urlencoded({extended: true}), (req,res)=>{
 	console.log(req.body);
 	res.send('success');
 });
