@@ -16,17 +16,25 @@ app.get('/',(req,res) => {
 		`);
 });
 
-app.post('/', (req,res)=>{
-	//get access to submitted information with the req object
-	req.on('data', data => {
-		const parsed = data.toString('utf8').split('&');
-		const formData = {}; //create object to receive the data variables
-		for(let pair of parsed){
-			const [key, value] = pair.split('=');
-			formData[key] = value;
-		};
-		console.log(formData);
-	});
+const bodyParser = (req, res, next) => { //acts as express middleware function  
+	if(req.method === 'POST'){
+	 req.on('data', data => {
+	 	const parsed = data.toString('utf8').split('&');
+	 	const formData = {}; //create object to receive the data variables
+	 	for(let pair of parsed){
+	 		const [key, value] = pair.split('=');
+	 		formData[key] = value;
+	 	};
+		 req.body = formData;
+		 next();
+	 });
+	}else {
+		next();
+	};
+};
+
+app.post('/', bodyParser, (req,res)=>{
+	console.log(req.body);
 	res.send('success');
 });
 
